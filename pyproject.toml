@@ -1,0 +1,21 @@
+[project]
+name = "updated-corgen"
+version = "0.1.0"
+description = "course_generator_dependencies"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bs4>=0.0.2",
+    "fastapi[standard]>=0.115.13",
+    "google-genai>=1.21.0",
+    "google-search-results>=2.4.2",
+    "pydantic>=2.11.7",
+    "pymongo>=4.13.2",
+    "pypdf>=5.6.1",
+    "pypdf2>=3.0.1",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.4",
+    "serpapi>=0.1.5",
+    "spacy>=3.8.7",
+    "tiktoken>=0.9.0",
+]

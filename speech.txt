@@ -1,0 +1,51 @@
+Decision Tree
+Last Updated : 16 Jan, 2025
+Decision tree is a simple diagram that shows different choices and their possible results helping you make decisions easily. This article is all about what decision trees are, how they work, their advantages and disadvantages and their applications.
+
+Understanding Decision Tree
+A decision tree is a graphical representation of different options for solving a problem and show how different factors are related. It has a hierarchical tree structure starts with one main question at the top called a node which further branches out into different possible outcomes where:
+
+Root Node is the starting point that represents the entire dataset.
+Branches: These are the lines that connect nodes. It shows the flow from one decision to another.
+Internal Nodes are Points where decisions are made based on the input features.
+Leaf Nodes: These are the terminal nodes at the end of branches that represent final outcomes or predictions
+Decision-Tree
+Decision Tree Structure
+They also support decision-making by visualizing outcomes. You can quickly evaluate and compare the "branches" to determine which course of action is best for you.
+
+Now, let’s take an example to understand the decision tree. Imagine you want to decide whether to drink coffee based on the time of day and how tired you feel. First the tree checks the time of day—if it’s morning it asks whether you are tired. If you’re tired the tree suggests drinking coffee if not it says there’s no need. Similarly in the afternoon the tree again asks if you are tired. If you recommends drinking coffee if not it concludes no coffee is needed.
+
+Decision-Tree-2
+Classification of Decision Tree
+We have mainly two types of decision tree based on the nature of the target variable: classification trees and regression trees.
+
+Classification trees: They are designed to predict categorical outcomes means they classify data into different classes. They can determine whether an email is "spam" or "not spam" based on various features of the email. 
+Regression trees : These are used when the target variable is continuous It predict numerical values rather than categories. For example a regression tree can estimate the price of a house based on its size, location, and other features.
+How Decision Trees Work?
+A decision tree working starts with a main question known as the root node. This question is derived from the features of the dataset and serves as the starting point for decision-making.
+
+From the root node, the tree asks a series of yes/no questions. Each question is designed to split the data into subsets based on specific attributes. For example if the first question is "Is it raining?", the answer will determine which branch of the tree to follow. Depending on the response to each question you follow different branches. If your answer is "Yes," you might proceed down one path if "No," you will take another path.
+
+This branching continues through a sequence of decisions. As you follow each branch, you get more questions that break the data into smaller groups. This step-by-step process continues until you have no more helpful questions .
+
+You reach at the end of a branch where you find the final outcome or decision. It could be a classification (like "spam" or "not spam") or a prediction (such as estimated price).
+
+Advantages of Decision Trees
+Simplicity and Interpretability: Decision trees are straightforward and easy to understand. You can visualize them like a flowchart which makes it simple to see how decisions are made.
+Versatility: It means they can be used for different types of tasks can work well for both classification and regression
+No Need for Feature Scaling: They don’t require you to normalize or scale your data. 
+Handles Non-linear Relationships: It is capable of capturing non-linear relationships between features and target variables.
+Disadvantages of Decision Trees
+Overfitting: Overfitting occurs when a decision tree captures noise and details in the training data and it perform poorly on new data.
+Instability: instability means that the model can be unreliable slight variations in input can lead to significant differences in predictions.
+Bias towards Features with More Levels: Decision trees can become biased towards features with many categories focusing too much on them during decision-making. This can cause the model to miss out other important features led to less accurate predictions .
+Applications of Decision Trees
+Loan Approval in Banking: A bank needs to decide whether to approve a loan application based on customer profiles.
+Input features include income, credit score, employment status, and loan history.
+The decision tree predicts loan approval or rejection, helping the bank make quick and reliable decisions.
+Medical Diagnosis: A healthcare provider wants to predict whether a patient has diabetes based on clinical test results.
+Features like glucose levels, BMI, and blood pressure are used to make a decision tree.
+Tree classifies patients into diabetic or non-diabetic, assisting doctors in diagnosis.
+Predicting Exam Results in Education : School wants to predict whether a student will pass or fail based on study habits.
+Data includes attendance, time spent studying, and previous grades.
+The decision tree identifies at-risk students, allowing teachers to provide additional support.

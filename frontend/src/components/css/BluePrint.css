@@ -1,0 +1,209 @@
+.blueprint-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+h2, h3, h4, h5 {
+  color: #1e293b;
+  margin: 0;
+}
+
+.section-header-blueprint {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.outline-section-blueprint, .structure-section-blueprint {
+  margin-bottom: 3rem;
+}
+
+.outline-card-blueprint, .module-card-blueprint, .submodule-card-blueprint, .activity-card-blueprint {
+  background: #f8f9ff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e8ecff;
+}
+
+.module-header-blueprint, .submodule-header-blueprint {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.module-title-blueprint, .submodule-title-blueprint {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle-icon-blueprint {
+  display: flex;
+  align-items: center;
+  color: #6b46c1;
+}
+
+.module-hours-blueprint, .activity-count-blueprint {
+  margin-left: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.field-group-blueprint {
+  margin-bottom: 1.5rem;
+}
+
+.field-group-blueprint label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.field-value-blueprint {
+  padding: 0.5rem;
+  border-radius: 4px;
+  /* background: white; */
+  border: 1px solid #e8ecff;
+}
+.submodules-list-blueprint {
+    background: rgb(139 92 246 / 37%);
+    padding: 1rem;
+}
+.module-description-blueprint, .submodule-description-blueprint {
+  color: #64748b;
+  margin: 1rem 0;
+}
+
+.prerequisites-list-blueprint, .outcomes-list-blueprint {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prerequisites-list-blueprint li, .outcomes-list-blueprint li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e8ecff;
+}
+
+.edit-btn-blueprint {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: #e8ecff;
+  color: #6b46c1;
+}
+
+.edit-form-blueprint {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border: 1px solid #e8ecff;
+}
+
+.edit-form-blueprint input,
+.edit-form-blueprint textarea,
+.edit-form-blueprint select {
+  width: 95%;
+  padding: 0.75rem;
+  border: 2px solid #e8ecff;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-family: sans-serif;
+}
+
+.edit-form-blueprint textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.edit-form-blueprint select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+.form-buttons-blueprint {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.save-btn-blueprint, .cancel-btn-blueprint {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.save-btn-blueprint {
+  background: #6b46c1;
+  color: white;
+}
+
+.cancel-btn-blueprint {
+  background: #e8ecff;
+  color: #64748b;
+}
+
+.activity-card-blueprint {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #e8ecff;
+}
+
+.activity-header-blueprint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.activity-type-blueprint {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .section-header-blueprint {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .module-header-blueprint, .submodule-header-blueprint {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .module-title-blueprint, .submodule-title-blueprint {
+    width: 100%;
+  }
+}

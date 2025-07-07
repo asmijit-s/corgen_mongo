@@ -1,0 +1,202 @@
+.course-outline-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 1200px;
+  margin: 2rem auto;
+}
+
+.header-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e8ecff;
+}
+
+.course-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.course-id {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.outline-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preview-item {
+  padding: 1rem;
+  background: #f8f9ff;
+  border-radius: 8px;
+  border-left: 3px solid #e8ecff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.preview-item:hover {
+  background: linear-gradient(135deg, #f8f9ff, #e8ecff);
+  border-left-color: #6b46c1;
+}
+
+.preview-label {
+  font-size: 0.9rem;
+  color: #6b46c1;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-icon {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.preview-value {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.preview-value ul {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.preview-value li {
+  margin-bottom: 0.5rem;
+}
+
+.edit-container {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e8ecff;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-input-outline {
+  width: 95%;
+  padding: 0.75rem;
+  border: 2px solid #e8ecff;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #6b46c1;
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.form-textarea-outline {
+  width:95%;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.build-btn {
+  background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.build-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+}
+
+.cancel-btn {
+  background: #e8ecff;
+  color: #64748b;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #ddd6fe;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-continue-btn {
+  width: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.download-pdf-btn{
+  width: 50%;
+  background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+}
+.generate-course-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .course-outline-container {
+    padding: 1rem;
+  }
+  
+  .course-title {
+    font-size: 1.5rem;
+  }
+}

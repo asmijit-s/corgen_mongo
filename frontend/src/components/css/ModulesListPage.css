@@ -1,0 +1,194 @@
+/* Add these to your existing CSS */
+
+.module-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.submodules-count {
+  margin-left: 10px;
+  color: #6b46c1;
+  font-weight: 600;
+}
+
+.submodules-list {
+  margin-top: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.back-btn {
+  background: #e8ecff;
+  color: #6b46c1;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+}
+
+.back-btn:hover {
+  background: #ddd6fe;
+}
+
+/* Enhance the modal styles */
+.modal-box {
+  background: #fff;
+  padding: 2rem;
+  width: 500px;
+  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  color: #6b46c1;
+}
+
+.modal-box .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.modal-box label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-box input,
+.modal-box textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e8ecff;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.modal-box textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Add these to your ModulesPage.css */
+
+.module-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.submodule-card{
+  margin:1.5rem;
+}
+.module-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.module-info {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.module-arrow-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #6b46c1;
+  transition: all 0.3s ease;
+}
+
+.module-arrow-container {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  padding: 1rem;
+  min-width: 120px;
+  border-left: 1px dashed #e8ecff;
+  transition: all 0.3s ease;
+}
+
+.module-arrow-icon {
+  font-size: 1.5rem;
+  /* margin-bottom: 0.5rem; */
+  transition: transform 0.3s ease;
+}
+
+.module-add-icon {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.module-arrow-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.module-card:hover .module-arrow-container {
+  background-color: #f8f9ff;
+}
+
+.module-card:hover .module-arrow-icon {
+  transform: translateX(3px);
+}
+
+.module-card:hover .module-arrow-link {
+  color: #8b5cf6;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #6b46c1;
+  font-weight: 600;
+}
+
+.error-message {
+  color: #ef4444;
+  padding: 2rem;
+  background: #fee2e2;
+  border-radius: 8px;
+  margin: 2rem;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .module-content {
+    flex-direction: column;
+  }
+  
+  .module-info {
+    padding-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .module-arrow-container {
+    border-left: none;
+    border-top: 1px dashed #e8ecff;
+    padding: 1rem 0 0;
+    width: 100%;
+  }
+  
+  .module-arrow-text {
+    display: none;
+  }
+}

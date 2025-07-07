@@ -1,0 +1,371 @@
+.blueprint-container-generate {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+h2, h3, h4, h5 {
+  color: #1e293b;
+  margin: 0;
+}
+
+.structure-section-blueprint-generate {
+  margin-bottom: 3rem;
+}
+
+.modules-dropdown-generate {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.module-dropdown-item-generate {
+  background: #f8f9ff;
+  border-radius: 8px;
+  border: 1px solid #e8ecff;
+  overflow: hidden;
+}
+
+.module-dropdown-header-generate {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-dropdown-header-generate:hover {
+  background-color: #f0f4ff;
+}
+
+.module-title-generate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.toggle-icon-generate {
+  color: #6b46c1;
+  transition: transform 0.2s;
+}
+
+.submodules-dropdown-generate {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.submodule-dropdown-item-generate {
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e8ecff;
+  overflow: hidden;
+}
+
+.submodule-dropdown-header-generate {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submodule-dropdown-header-generate:hover {
+  background-color: #f8faff;
+}
+
+.submodule-title-generate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.activities-list-generate {
+  padding: 0 1.25rem 1rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-item-generate {
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e8ecff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s;
+}
+
+.activity-item-generate:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(107, 70, 193, 0.1);
+  border-color: #d6dcff;
+}
+
+.activity-type-generate {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  min-width: 80px;
+  text-align: center;
+}
+
+.activity-name-generate {
+  flex: 1;
+  font-weight: 500;
+  color: #1e293b;
+}
+.title-generate {
+  margin: 20px; 
+}
+/* Activity type colors */
+.activity-type-generate[data-type="lecture"] { background-color: #6b46c1; }
+.activity-type-generate[data-type="quiz"] { background-color: #10b981; }
+.activity-type-generate[data-type="assignment"] { background-color: #3b82f6; }
+.activity-type-generate[data-type="document"] { background-color: #f59e0b; }
+.activity-type-generate[data-type="reading"] { background-color: #64748b; }
+.activity-type-generate[data-type="Lecture"] { background-color: #6b46c1; }
+.activity-type-generate[data-type="Quiz"] { background-color: #10b981; }
+.activity-type-generate[data-type="Assignment"] { background-color: #3b82f6; }
+.activity-type-generate[data-type="Document"] { background-color: #f59e0b; }
+.activity-type-generate[data-type="Reading"] { background-color: #64748b; }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .blueprint-container-generate {
+    padding: 1rem;
+  }
+  
+  .module-dropdown-header-generate,
+  .submodule-dropdown-header-generate {
+    padding: 1rem;
+  }
+  
+  .activities-list-generate {
+    padding-left: 2rem;
+  }
+  
+  .activity-item-generate {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .activity-type-generate {
+    align-self: flex-start;
+  }
+}
+/* Add to Blueprint_freezed.css */
+
+.activity-content-wrapper-generate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.activity-info-generate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.activity-manage-generate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.activity-manage-generate:hover {
+  background-color: #e2e8f0;
+}
+
+.activity-manage-text-generate {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4f46e5;
+}
+
+.activity-manage-icon-generate {
+  color: #4f46e5;
+  font-size: 0.9rem;
+}
+
+.activity-content-preview-generate {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #4f46e5;
+}
+
+.content-preview-section h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.content-preview-section p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Add this to make sure the manage content button doesn't trigger the activity click */
+.activity-manage-generate {
+  pointer-events: auto;
+}
+/* Add Document Button */
+.add-document-button {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  background:linear-gradient(135deg, #6b46c1, #8b5cf6) ;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.add-document-button:hover {
+  background: #6b46c1;
+}
+
+/* Delete Document Button */
+.delete-document-button {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.delete-document-button:hover {
+  background: #cc0000;
+}
+
+/* Add Document Modal */
+.add-document-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-group input[type="file"] {
+  width: 100%;
+}
+
+.file-preview {
+  margin-top: 0.5rem;
+  border: 1px dashed #ddd;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.file-item {
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-button {
+  padding: 0.75rem 1.5rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button {
+  padding: 0.75rem 1.5rem;
+  background: #6b46c1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: #0b7dda;
+}
+
+.save-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Activity Item Layout */
+.activity-item-generate {
+  display: flex;
+  align-items: center;
+}

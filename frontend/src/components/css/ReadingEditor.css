@@ -1,0 +1,220 @@
+.reading-editor-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.formatting-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.view-mode-toggle {
+  margin-left: auto;
+  display: none;
+}
+.custom-code-block {
+  background-color: #f5f0ff;
+  padding: 25px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.8em;
+  position: relative;
+  overflow: auto;
+  width: max-content;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #d3bfff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.copy-btn:hover {
+  opacity: 1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem auto;
+  display: block; /* center */
+}
+img.align-left {
+  float: left;
+  margin-right: 1rem;
+}
+img.align-right {
+  float: right;
+  margin-left: 1rem;
+}
+img.align-left {
+  float: left;
+  margin-right: 1rem;
+  max-width: 50%;
+}
+img.align-right {
+  float: right;
+  margin-left: 1rem;
+  max-width: 50%;
+}
+img.align-center {
+  display: block;
+  margin: 0 auto;
+}
+/* Code Block Styles */
+.code-block {
+  position: relative;
+  background: #1e1e1e;
+  color: #f8f8f8;
+  padding: 1.5rem 1rem 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+}
+
+.code-block code {
+  display: block;
+}
+
+.code-block-copy {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.code-block-copy:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.code-block-copy svg {
+  width: 14px;
+  height: 14px;
+}
+.formatting-buttons button {
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.formatting-buttons button:hover {
+  background: #f0f0f0;
+}
+
+.formatting-buttons button.is-active {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+.ProseMirror {
+  min-height: 300px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+.pdf-download-btn-reading {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.font-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.font-controls select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Add to your editor CSS */
+.ProseMirror {
+  font-size: 16px; /* Default size */
+}
+
+.ProseMirror span[style*="font-size"] {
+  line-height: 1.5;
+}
+
+.pdf-download-btn-reading:hover {
+  background: #c0392b;
+}
+.ProseMirror:focus {
+  outline: none;
+  border-color: #4d90fe;
+}
+
+.markdown-editor {
+  width: 100%;
+  min-height: 300px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.markdown-editor:focus {
+  outline: none;
+  border-color: #4d90fe;
+}
+
+.latex-block {
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 4px;
+  margin: 10px 0;
+}

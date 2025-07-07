@@ -1,0 +1,522 @@
+/* Modules Dropdown Styles */
+.modules-dropdown-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.module-dropdown-item {
+  margin-bottom: 1rem;
+  border: 1px solid #e8ecff;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.module-dropdown-item:hover {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.module-header-activity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #f8f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.module-header-activity:hover {
+  background: #e8ecff;
+}
+
+.module-title-container {
+  flex: 1;
+}
+
+.module-title-container h3 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.module-hours {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+.module-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.add-submodule-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e8ecff;
+  color: #6b46c1;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-submodule-btn:hover {
+  background: #ddd6fe;
+}
+
+.submodules-list-activity {
+  background: white;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.module-dropdown-item.active .submodules-list-activity {
+  max-height: 1000px;
+  padding: 1rem;
+}
+
+.submodule-item {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submodule-item:hover {
+  background: #f8f9ff;
+}
+
+.submodule-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+}
+
+.submodule-description {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.submodule-actions {
+  margin-top: 0.5rem;
+}
+
+.empty-submodules {
+  padding: 1.5rem;
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Activities Page Styles */
+.activities-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.activities-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.activities-header h1 {
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e8ecff;
+  color: #6b46c1;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-activity-btn {
+  background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-activity-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+}
+
+.activity-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e8ecff;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.activity-header h3 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.activity-duration {
+  background: #e8ecff;
+  color: #6b46c1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.activity-description {
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.activity-resources {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-bottom: 1rem;
+}
+
+.activity-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn, .delete-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background: #e8ecff;
+  color: #6b46c1;
+}
+
+.edit-btn:hover {
+  background: #ddd6fe;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+}
+
+.empty-activities {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  border: 1px dashed #e8ecff;
+  border-radius: 8px;
+}
+
+/* Activity Form Styles */
+.activity-edit-form,
+.modal-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e8ecff;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: unset;
+}
+.checkbox-group{
+    background: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-buttons,
+.modal-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #e8ecff;
+  color: #64748b;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .module-header-activity {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .activities-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Activity Type Badges */
+.activity-type-badge {
+  display: inline-block;
+  align-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+/* Form Select Styles */
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e8ecff;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+select:focus {
+  outline: none;
+  border-color: #6b46c1;
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+/* Activity Header Layout */
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.activity-header > div:first-child {
+  flex: 1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .activity-header {
+    flex-direction: column;
+  }
+  
+  .activity-duration {
+    align-self: flex-start;
+  }
+}
+
+/* Add these styles to your existing Activity.css */
+
+.generate-form {
+  background: #f8f9ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #e8ecff;
+}
+
+.generate-form h3 {
+  margin-top: 0;
+  color: #6b46c1;
+}
+
+.activity-type-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.type-option {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.type-option:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.generate-activities-btn {
+  background: #e8ecff;
+  color: #6b46c1;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.generate-activities-btn:hover {
+  background: #ddd6fe;
+}
+
+.generate-btn {
+  background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .generate-activities-btn,
+  .add-activity-btn {
+    width: 100%;
+  }
+  
+  .activity-type-options {
+    flex-direction: column;
+  }
+  
+  .type-option {
+    width: 100%;
+  }
+}
