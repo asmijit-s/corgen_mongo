@@ -36,7 +36,7 @@ const ModulesPage = () => {
     updatedModules[editingModule] = {
       module_title: editForm.title,
       module_description: editForm.description,
-      module_hours: parseInt(editForm.hours) || 0
+      module_hours: (editForm.hours) || 0
     };
     setModules(updatedModules);
     setEditingModule(null);
@@ -52,7 +52,7 @@ const ModulesPage = () => {
     const { name, value } = e.target;
     setEditForm(prev => ({
       ...prev,
-      [name]: name === 'hours' ? parseInt(value) || 0 : value
+      [name]: name === 'hours' ? `${value} hours`: '1 hour'
     }));
   };
 
@@ -160,7 +160,11 @@ const ModulesPage = () => {
                     type="number"
                     className="form-input-outline"
                     name="hours"
-                    value={editForm.hours}
+                    value={
+                      typeof editForm.hours === 'string'
+                        ? editForm.hours.replace(/\s*hours$/, '')
+                        : editForm.hours || ''
+                    }
                     onChange={handleChange}
                     min="0"
                   />
