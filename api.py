@@ -36,14 +36,7 @@ from course_content_generator import (
     ReadingMaterialOut,
     LectureScriptOut
 )
-from validator import (    
-    validate_content_with_keywords,
-    summarize_validation_report,
-    ValidationResult,
-    ValidationSummary,
-    ValidateContentInput,
-    ValidateContentOut
-)
+
 import json
 import logging
 from typing import Optional, Dict, Any
@@ -630,29 +623,7 @@ def redo_any_stage(request: RedoRequest):
         "previous_version_id": previous_version_id
     }
 
-
-
-@router.post("/validate-content", response_model=ValidateContentOut)
-def api_validate_content(input: ValidateContentInput):
-    try:
-        detailed_report = validate_content_with_keywords(
-            content=input.content,
-            activity_name=input.activity_name,
-            activity_type=input.activity_type
-        )
-        validation_results = [
-            ValidationResult.model_validate(item) if not isinstance(item, ValidationResult) else item
-            for item in detailed_report
-        ]
-        summary = summarize_validation_report(validation_results)
-
-        return {
-            "summary": summary,
-            "detailedReport": detailed_report
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
+   
 # Add this near the top with other Mongo collections
 collection_latest_versions = db["latest_versions"]
 
