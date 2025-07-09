@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from pydantic import BaseModel
 import PyPDF2
 from google import genai
-from google.genai.types import GenerateContentConfig, Content, Part
+from google.genai.types import GenerateContentConfig, Content, Part, Tool, GoogleSearch
 # Load environment
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -73,6 +73,9 @@ def call_gemini(prompt: str) -> str:
     return re.sub(r'^```(?:json)?|```$', '', raw.strip())
 
 def call_llm(prompt: Content, system_prompt: str, response_schema: Type[BaseModel], debug: bool = False, temp: float = 0.2) -> Optional[dict]:
+    grounding_tool = Tool(
+        google_search=GoogleSearch()
+    )
     try:
         response = client.models.generate_content(
             model="gemini-2.5-flash",
@@ -81,7 +84,8 @@ def call_llm(prompt: Content, system_prompt: str, response_schema: Type[BaseMode
                 system_instruction=system_prompt,
                 response_mime_type="application/json",
                 response_schema=response_schema,
-                temperature=temp
+                temperature=temp,
+                tools=[grounding_tool]
             )
         )
         if debug or True:  # force debug always for now
