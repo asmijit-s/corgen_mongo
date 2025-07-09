@@ -444,14 +444,16 @@ Generate a quiz for the **submodule** "{submodule_name}" under the module "{modu
 - Each question must include a short explanation of the correct answer.
 - Questions should be beginner-friendly and test conceptual clarity.
 - Ensure the questions are relevant to the submodule content and activity objective.
+- For MCQs, provide exactly 4 options (A, B, C, D) and one correct answer.
+- For True/False questions, provide a clear explanation and the 1st option as True and 2nd option as False and correct answer as "A" for True and "B" for False.
 
 ### Output Format:
 Return a **JSON array** where each item follows this schema:
 {{
   "question_id": "<unique_id>",  # e.g. "Q1", "Q2", etc.
   "question": "<question_text>",
-  "options": ["<A>", "<B>", "<C>", "<D>"],  # Omit if T/F
-  "answer": "<correct_option>",  # "A", "B", "C", "D" or "True"/"False"
+  "options": ["<A>", "<B>", "<C>", "<D>"] Or True/False
+  "answer": "<correct_option>",  # "A", "B", "C", "D" or "A" for True/"B" for False
   "explanation": "<why this is the correct answer>"
 }}
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ValidationError
 from typing import List, Optional, Dict, TypeVar, Type
 from pymongo import MongoClient
@@ -71,6 +71,7 @@ class ActivityRequest(BaseModel):
     submodule_description: str
     activity_types: List[str]
     user_instructions: Optional[str] = None
+    parent_version_id: Optional[str] = None
 
 class RedoRequest(BaseModel):
     stage: Stage
@@ -81,6 +82,17 @@ class ValidateRequest(BaseModel):
     content: str
     activity_name: str
     content_type: str  
+
+class BranchRequest(BaseModel):
+    version_id: str
+    stage: Stage
+
+class VersionHistoryResponse(BaseModel):
+    version_id: str
+    parent_version_id: Optional[str]
+    timestamp: datetime
+    stage: Stage
+    tag: Optional[str]
 
 def as_json(obj: BaseModel | dict) -> str:
     return json.dumps(obj.model_dump() if isinstance(obj, BaseModel) else obj, indent=2)
@@ -101,6 +113,7 @@ def parse_result(result_str: str | None, model: type[T]) -> T:
     except ValidationError as ve:
         logger.exception("Parsed result failed schema validation.")
         raise HTTPException(status_code=500, detail=f"Schema validation failed: {ve.errors()}")
+
 def auto_tag_version(entity_id: str, version_id: str, stage: Stage, prefix: str):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     tag = f"{prefix}-{timestamp}"
@@ -117,6 +130,10 @@ def auto_tag_version(entity_id: str, version_id: str, stage: Stage, prefix: str)
     except Exception as e:
         logger.warning(f"Auto-tagging failed for {version_id}: {e}")
 
+def safe_bson(obj):
+    if hasattr(obj, "model_dump"):
+        return obj.model_dump(mode="python")
+    return obj
 
 @router.post("/generate/outline")
 def generate_outline(course: CourseInit):
@@ -134,8 +151,10 @@ def generate_outline(course: CourseInit):
     # Optional: Flatten audience fields for filtering in MongoDB
     audience = course.target_audience
     course_dict.update({
-        "audience_type": audience.demographic,
-        "audience_board": audience.board,
+        "audience_type": audience.audienceType,
+        "audience_grade": audience.grade,
+        "audience_english_level": audience.english_level,
+        "audience_math_level": audience.maths_level,
         "audience_specialization": audience.specialization,
         "audience_country": audience.country
     })
@@ -171,7 +190,7 @@ def generate_outline(course: CourseInit):
     outline_record = {
         "version_id": version_id,
         "course_id": course_id,
-        "outline": result,
+        "outline": safe_bson(result),
         "timestamp": datetime.now(timezone.utc)
     }
 
@@ -181,13 +200,10 @@ def generate_outline(course: CourseInit):
     except Exception as e:
         logger.exception("Failed to store course outline in MongoDB")
 
-    # Step 5: Save in in-memory state
     course_state[course_id] = {
         "course_init": course_dict,
         "outline": result
     }
-
-    # Step 6: Get suggestions for next stage
     suggestions = get_stage_suggestions(Stage.outline, as_json(result))
 
     # Final Response
@@ -205,26 +221,23 @@ def generate_module(course_outline: CourseOutline):
 
     version_id = str(uuid.uuid4())  # Track version
 
-    # Step 1: Generate raw result
     result_str = generate_modules(course_outline)
     if isinstance(result_str, dict):
         result_str = json.dumps(result_str)
 
-    # Step 2: Validate and parse
     result = parse_result(result_str, ModuleSet)
 
-    # Step 3: Generate UUIDs for each module_id
     for module in result.modules:
         module.module_id = str(uuid.uuid4())
     module_ids = [m.module_id for m in result.modules]
     auto_tag_version(course_outline.course_id, version_id, Stage.module, "initial-module")
-    # Step 4: Store in MongoDB (collection_modules)
+    
     module_record = {
         "course_id": course_outline.course_id,
         "version_id": version_id,
         "module_ids": module_ids,
         "stage": "module",
-        "generated_modules": result.model_dump(),
+        "generated_modules": safe_bson(result),
         "timestamp": datetime.now(timezone.utc)
     }
 
@@ -268,7 +281,7 @@ def generate_submodule(module: Module):
     submodule_record = {
         "module_id": module.module_id,
         "version_id": version_id,
-        "generated_submodules": result.model_dump(),
+        "generated_submodules": safe_bson,
         "submodule_ids": submodule_ids,
         "stage": "submodule",
         "timestamp": datetime.now(timezone.utc)
@@ -667,7 +680,7 @@ def rollback_version(stage: Stage, version_id: str):
 
         auto_tag_version(identifier, new_version_id, stage, f"rollback-{stage.value}")
         target_collection.insert_one(old_version)
-
+        old_version["parent_version_id"] = version_id
         # Step 5: Update latest version pointer
         collection_latest_versions.update_one(
             {"entity_id": identifier, "stage": stage.value},
@@ -685,3 +698,118 @@ def rollback_version(stage: Stage, version_id: str):
     except Exception as e:
         logger.exception("Failed to rollback version")
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.post("/branch")
+def branch_version(request: BranchRequest):
+    logger.info(f"Branching from version: {request.version_id} at stage: {request.stage}")
+    
+    collection_map = {
+        Stage.outline: collection_outline,
+        Stage.module: collection_modules,
+        Stage.submodule: collection_submodules,
+        Stage.activity: collection_activities,
+        Stage.reading: collection_content,
+        Stage.lecture: collection_content,
+        Stage.quiz: collection_content,
+    }
+    
+    target_collection = collection_map.get(request.stage)
+    if target_collection is None:
+        raise HTTPException(status_code=400, detail="Unsupported stage for branching")
+    
+    # Find existing version
+    existing_version = target_collection.find_one({"version_id": request.version_id})
+    if not existing_version:
+        raise HTTPException(status_code=404, detail="Version not found")
+    
+    # Create new branch
+    new_version_id = str(uuid.uuid4())
+    branch_data = dict(existing_version)
+    branch_data["version_id"] = new_version_id
+    branch_data["parent_version_id"] = request.version_id
+    branch_data["timestamp"] = datetime.now(timezone.utc)
+    
+    # Remove MongoDB ID
+    if "_id" in branch_data:
+        del branch_data["_id"]
+    
+    # Insert new branch
+    target_collection.insert_one(branch_data)
+    
+    # Auto-tag the new branch
+    identifier = (
+        branch_data.get("course_id") or 
+        branch_data.get("module_id") or 
+        branch_data.get("submodule_id") or 
+        branch_data.get("activity_id")
+    )
+    if identifier is None:
+        raise HTTPException(status_code=400, detail="No valid identifier found for version tagging")
+    auto_tag_version(str(identifier), new_version_id, request.stage, "branch")
+    
+    return {
+        "message": "Branch created successfully",
+        "new_version_id": new_version_id,
+        "parent_version_id": request.version_id,
+        "stage": request.stage.value
+    }
+
+# Add version history endpoint
+@router.get("/versions", response_model=List[VersionHistoryResponse])
+def get_version_history(
+    entity_id: str = Query(..., description="Course/Module/Submodule/Activity ID"),
+    stage: Optional[Stage] = Query(None, description="Filter by stage")
+):
+    collections = []
+    if stage:
+        collections = [(stage, {
+            Stage.outline: collection_outline,
+            Stage.module: collection_modules,
+            Stage.submodule: collection_submodules,
+            Stage.activity: collection_activities,
+            Stage.reading: collection_content,
+            Stage.lecture: collection_content,
+            Stage.quiz: collection_content,
+        }.get(stage))]
+    else:
+        collections = [
+            (Stage.outline, collection_outline),
+            (Stage.module, collection_modules),
+            (Stage.submodule, collection_submodules),
+            (Stage.activity, collection_activities),
+            (Stage.reading, collection_content),
+            (Stage.lecture, collection_content),
+            (Stage.quiz, collection_content),
+        ]
+    
+    history = []
+    for stg, coll in collections:
+        if coll is None:
+            continue
+        # Find all versions for this entity
+        cursor = coll.find({
+            "$or": [
+                {"course_id": entity_id},
+                {"module_id": entity_id},
+                {"submodule_id": entity_id},
+                {"activity_id": entity_id}
+            ]
+        }, {"_id": 0, "version_id": 1, "parent_version_id": 1, "timestamp": 1})
+        
+        for doc in cursor:
+            # Get tag if exists
+            tag_doc = collection_version_tags.find_one({"version_id": doc["version_id"]})
+            tag = tag_doc["tag"] if tag_doc else None
+            
+            history.append(VersionHistoryResponse(
+                version_id=doc["version_id"],
+                parent_version_id=doc.get("parent_version_id"),
+                timestamp=doc["timestamp"],
+                stage=stg,
+                tag=tag
+            ))
+    
+    # Sort by timestamp descending
+    history.sort(key=lambda x: x.timestamp, reverse=True)
+    
+    return history
