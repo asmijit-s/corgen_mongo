@@ -34,7 +34,7 @@ const ModulesListPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          module_id: module.module_id,
+          module_id: module.module_id || '',
           module_title: module.module_title,
           module_description: module.module_description,
           module_hours: module.module_hours,

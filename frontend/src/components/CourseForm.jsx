@@ -11,7 +11,8 @@ const CourseForm = () => {
   outcomes: '',
   audienceType: '',
   grade: '',
-  board: '',
+  mathLevel: '',
+  englishLevel: '',
   country: '',
   degree: '',
   prerequisites: '',
@@ -118,7 +119,7 @@ const degreeOptions = [
     if (!formData.country) return setIsValid(false);
 
     // If school student, grade and board must be selected
-    if (formData.audienceType === 'school' && (!formData.grade || !formData.board)) return setIsValid(false);
+    if (formData.audienceType === 'school' && !formData.grade) return setIsValid(false);
     // If UG/PG/professional, specialization must be present
     if (['undergraduate', 'postgraduate', 'professional'].includes(formData.audienceType) && !formData.specialization) return setIsValid(false);
     setIsValid(allFieldsFilled);
@@ -135,11 +136,14 @@ const degreeOptions = [
       prerequisites: formData.prerequisites.split(',').map(p => p.trim()),
       description: formData.description,
       learning_objectives: formData.objectives.split('.').map(o => o.trim()).filter(o => o),
-      target_audience: formData.audienceType,
-      grade : formData.grade,
-      board : formData.board,
-      degree : formData.degree,
-      country: formData.country,
+      target_audience: {
+        audienceType: formData.audienceType,
+        grade : formData.grade,
+        specialization : formData.degree,
+        country: formData.country,
+        maths_level: formData.mathLevel || null,
+        english_level: formData.englishLevel || null
+      },
       duration: `${formData.totalWeeks} weeks`,
       credits: formData.creditType === "calculated" ? calculatedCredits : parseFloat(formData.manualCredits)
     };
@@ -261,24 +265,6 @@ localStorage.setItem("course-init", JSON.stringify(payload));
         ))}
       </select>
     </div>
-
-    <div className="form-group">
-      <label className="form-label">Education Board</label>
-      <select
-        className="form-input form-select"
-        name="board"
-        value={formData.board}
-        onChange={handleChange}
-      >
-        <option value="">Select board</option>
-        <option value="CBSE">CBSE</option>
-        <option value="ICSE">ICSE</option>
-        <option value="IB">IB (International Baccalaureate)</option>
-        <option value="IGCSE">IGCSE</option>
-        <option value="State Board">State Board</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
   </>
 )}
 
@@ -318,7 +304,36 @@ localStorage.setItem("course-init", JSON.stringify(payload));
     ))}
   </select>
 </div>
+<div className="form-group">
+        <label className="form-label">Math Level Required</label>
+        <select
+          className="form-input form-select"
+          name="mathLevel"
+          value={formData.mathLevel}
+          onChange={handleChange}
+        >
+          <option value="">Not Required</option>
+          <option value="basic">Basic Math</option>
+          <option value="intermediate">Intermediate Math</option>
+          <option value="advanced">Advanced Math (e.g. calculus)</option>
+        </select>
+      </div>
 
+      <div className="form-group">
+        <label className="form-label">English Level Required</label>
+        <select
+          className="form-input form-select"
+          name="englishLevel"
+          value={formData.englishLevel}
+          onChange={handleChange}
+        >
+          <option value="not required">Not Required</option>
+          <option value="basic level">Basic</option>
+          <option value="intermediate level">Intermediate</option>
+          <option value="nust be fluent">Fluent</option>
+          <option value="for native">Native</option>
+        </select>
+       </div>
         
         <div className="form-group">
           <label className="form-label">Prerequisites to the Course<span  style={{color:'red'}}>*</span></label>

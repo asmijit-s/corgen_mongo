@@ -21,7 +21,7 @@ import "katex/dist/katex.min.css";
 import "./css/ReadingEditor.css";
 import FontSizeControl from "./Fontsize";
 import { jsPDF } from 'jspdf';
-import { useParams } from "react-router-dom";
+import { useParams ,useNavigate} from "react-router-dom";
 
 const convertToMarkdown = (content) => {
   return content
@@ -50,8 +50,9 @@ lowlight.register('javascript', javascript);
 lowlight.register('python', python);
 
 const ReadingEditor = ({ generatingcontext }) => {
-    console.log(generatingcontext);
+  console.log(generatingcontext);
   const lowlight = createLowlight(common);
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [viewMode, setViewMode] = useState("wysiwyg"); // 'wysiwyg' or 'markdown'
   const [markdownContent, setMarkdownContent] = useState("");
@@ -76,7 +77,19 @@ const ReadingEditor = ({ generatingcontext }) => {
     const { activity } = getCurrentActivity() || {};
     return activity?.content?.[generatingcontext] || defaultContent;
   });
+const handleDeleteContent = () => {
+  const context = getCurrentActivity();
+  if (!context) return;
 
+  const { course, moduleIdx, submoduleIdx, activityIdx } = context;
+  const activity = course.modules?.[moduleIdx]?.submodules?.[submoduleIdx]?.activities?.[activityIdx];
+
+  if (activity && activity.content) {
+    delete activity.content; // Remove the entire content object
+    localStorage.setItem("generatedCourse", JSON.stringify(course));
+    navigate(`/generate`);
+  }
+};
   const editor = useEditor({
   extensions: [
     StarterKit.configure({ heading: { levels: [1, 2, 3] }, codeBlock: false}),
@@ -378,6 +391,9 @@ const downloadAsPDF = async () => {
           </button>
           <button onClick={triggerImageUpload}>Insert Image</button>
           <button onClick={insertMath}>Insert Math</button>
+           <button onClick={handleDeleteContent} style={{ background: '#e74c3c', color: 'white' }}>
+              Delete Content
+          </button>
           <button onClick={downloadAsPDF} className="pdf-download-btn" hidden>
             Download PDF
             </button>
