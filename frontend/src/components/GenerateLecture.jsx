@@ -138,8 +138,6 @@ const LecturePage = () => {
   } catch (error) {
     console.error('Error saving content:', error);
     alert(error.message || 'Failed to save. Please try again.');
-  }finally{
-    setIsSubmitting(false);
   }
 };
 

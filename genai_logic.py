@@ -47,9 +47,11 @@ SchemaDict["lecture"]=LectureScriptOut
 ################################# OUTLINE GENERATION ######################################################
 
 class TargetAudience(BaseModel):
-    demographic: str
-    board: str
-    specialization: str
+    audienceType: str
+    grade : Optional[str] = None  # Optional, for school students
+    english_level: Optional[str] = None  
+    maths_level: Optional[str] = None
+    specialization: Optional[str] = None  # Optional, for undergraduates/postgraduates
     country: Optional[str] = None
 
 class CourseInit(BaseModel):
@@ -84,8 +86,10 @@ INPUTS:
 - Description: {course.description}
 - Learning Objective: {', '.join(course.learning_objectives)}
 - Target Audience:
-  - Learner Type: {course.target_audience.demographic}
-  - Education Board: {course.target_audience.board}
+  - Learner Type: {course.target_audience.audienceType}
+  - Grade: {course.target_audience.grade if course.target_audience.grade else "N/A"}    
+  - English Proficiency: {course.target_audience.english_level}
+  - Maths Proficiency: {course.target_audience.maths_level}
   - Specialization: {course.target_audience.specialization}
   - Country: {course.target_audience.country}
 - Duration: {course.duration}
@@ -118,7 +122,12 @@ INSTRUCTIONS FOR GENERATION:
 6) Customize the content based on the target audience:
    - For school students, use simplified concepts and age-appropriate vocabulary.
    - For undergraduates and postgraduates, use academically appropriate structure and discipline-specific terminology.
-   - Consider the Education Board (e.g., CBSE, IB) to tailor rigor, format, or scope if relevant.
+   - Consider the target audience's level of expertise and familiarity with the subject matter.
+   - Use clear, concise language appropriate for the audience's educational level.
+   - CConsider the grade level for school students, ensuring the content is age-appropriate and engaging.
+   - For undergraduates and postgraduates, use more complex concepts and terminology.
+   - Consider the target audience's English proficiency level and adjust the language complexity accordingly.
+   - Consider the Maths Proficiency and adapt accordingly.
    - Incorporate specialization to keep the course relevant to the learner's domain (e.g., use computing-related examples for CS students).
 7) Align learning outcomes with both the learner level and specialization.
 

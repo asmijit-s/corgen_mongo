@@ -134,8 +134,10 @@ def generate_outline(course: CourseInit):
     # Optional: Flatten audience fields for filtering in MongoDB
     audience = course.target_audience
     course_dict.update({
-        "audience_type": audience.demographic,
-        "audience_board": audience.board,
+        "audience_type": audience.audienceType,
+        "audience_grade": audience.grade,
+        "audience_english_level": audience.english_level,
+        "audience_math_level": audience.maths_level,
         "audience_specialization": audience.specialization,
         "audience_country": audience.country
     })
