@@ -281,7 +281,7 @@ def generate_submodule(module: Module):
     submodule_record = {
         "module_id": module.module_id,
         "version_id": version_id,
-        "generated_submodules": safe_bson,
+        "generated_submodules": safe_bson(result),
         "submodule_ids": submodule_ids,
         "stage": "submodule",
         "timestamp": datetime.now(timezone.utc)
@@ -329,7 +329,7 @@ def generate_activity(payload: ActivityRequest):
     activity_record = {
         "submodule_id": payload.submodule_id,
         "version_id": version_id,
-        "generated_activities": result.model_dump(),
+        "generated_activities": safe_bson(result),
         "activity_ids": activity_ids,
         "stage": "activity",
         "timestamp": datetime.now(timezone.utc)
