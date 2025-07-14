@@ -8,7 +8,6 @@ const CourseForm = () => {
   title: '',
   description: '',
   objectives: '',
-  outcomes: '',
   audienceType: '',
   grade: '',
   mathLevel: '',
@@ -101,29 +100,35 @@ const degreeOptions = [
   fetchCountries();
 }, []);
 
+const validateForm = () => {
+  const requiredFields = [
+    'title', 'description', 'objectives',
+    'prerequisites', 'contactHours',
+    'homeworkHours', 'totalWeeks', 'creditType'
+  ];
 
-  const validateForm = () => {
-    const requiredFields = [
-      'title', 'description', 'objectives', 'outcomes',
-      'audience', 'prerequisites', 'contactHours',
-      'homeworkHours', 'totalWeeks', 'creditType'
-    ];
-    
-    const allFieldsFilled = requiredFields.every(field => {
-      if (field === 'creditType' && formData[field] === 'manual') {
-        return formData.manualCredits.trim() !== '';
-      }
-      return formData[field].trim() !== '';
-    });
-    if (!formData.audienceType) return setIsValid(false);
-    if (!formData.country) return setIsValid(false);
+  const allFieldsFilled = requiredFields.every(field => {
+    const value = formData[field];
+    if (field === 'creditType' && value === 'manual') {
+      return (formData.manualCredits || '').toString().trim() !== '';
+    }
+    return (
+      (typeof value === 'string' && value.trim() !== '') ||
+      (typeof value === 'number' && !isNaN(value))
+    );
+  });
 
-    // If school student, grade and board must be selected
-    if (formData.audienceType === 'school' && !formData.grade) return setIsValid(false);
-    // If UG/PG/professional, specialization must be present
-    if (['undergraduate', 'postgraduate', 'professional'].includes(formData.audienceType) && !formData.specialization) return setIsValid(false);
-    setIsValid(allFieldsFilled);
-  };
+  if (!formData.audienceType) return setIsValid(false);
+  if (!formData.country) return setIsValid(false);
+
+  if (formData.audienceType === 'school' && !formData.grade) return setIsValid(false);
+  if (
+    ['undergraduate', 'postgraduate', 'professional'].includes(formData.audienceType) &&
+    !formData.degree
+  ) return setIsValid(false);
+
+  setIsValid(allFieldsFilled);
+};
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -163,10 +168,10 @@ const degreeOptions = [
     const data = await response.json();
     console.log("API response:", data);
 
+    // ✅ Store only the IDs
+    sessionStorage.setItem("course_id", data.course_id);
+    sessionStorage.setItem("course_version_id", data.version_id);
 
-    // Store result (you can pick `data.result` or whole response)
-localStorage.setItem("generatedCourse", JSON.stringify({ outline: data.result , suggestions_outlines: data.suggestions}));
-localStorage.setItem("course-init", JSON.stringify(payload));
     navigate("/outline");
 
   } catch (error) {
@@ -216,18 +221,6 @@ localStorage.setItem("course-init", JSON.stringify(payload));
             value={formData.objectives}
             onChange={handleChange}
             placeholder="Enter learning objectives"
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Learning Outcomes<span  style={{color:'red'}}>*</span></label>
-          <textarea
-            className="form-input form-textarea"
-            name="outcomes"
-            value={formData.outcomes}
-            onChange={handleChange}
-            placeholder="Enter learning outcomes"
             required
           />
         </div>

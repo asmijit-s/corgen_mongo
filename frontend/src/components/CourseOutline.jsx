@@ -5,7 +5,6 @@ import './css/CourseOutline.css';
 
 const CourseOutline = () => {
   const navigate = useNavigate();
-
   const [courseData, setCourseData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editField, setEditField] = useState(null);
@@ -14,12 +13,24 @@ const CourseOutline = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
 
-  useEffect(() => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-      setCourseData(JSON.parse(stored));
-    }
-  }, []);
+ useEffect(() => {
+  const course_id = sessionStorage.getItem("course_id");
+  const version_id = sessionStorage.getItem("outline_version_id");
+
+  if (!course_id || !version_id) return;
+
+  fetch(`http://127.0.0.1:8000/course/get_outline?course_id=${course_id}&version_id=${version_id}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Outline not found");
+      return res.json();
+    })
+    .then(data => setCourseData(data))
+    .catch(err => {
+      console.error(err);
+      alert("Failed to load course outline.");
+    });
+}, []);
+
 
   const handleEdit = (field, value) => {
     setEditField(field);
@@ -27,19 +38,44 @@ const CourseOutline = () => {
     setEditValue(Array.isArray(value) ? value.join('\n') : value);
   };
 
-  const handleSaveField = () => {
-    const updatedData = { ...courseData };
-    const newValue =
-      editField === 'prerequisites' || editField === 'learning_outcomes'
-        ? editValue.split('\n').filter((item) => item.trim() !== '')
-        : editValue;
+const handleSaveField = async () => {
+  const newValue =
+    editField === 'prerequisites' || editField === 'learning_outcomes'
+      ? editValue.split('\n').filter((item) => item.trim() !== '')
+      : editValue;
 
-    updatedData.outline[editField] = newValue;
-    setCourseData(updatedData);
+  try {
+    const course_id = sessionStorage.getItem("course_id");
+    const version_id = sessionStorage.getItem("outline_version_id");
+
+    const response = await fetch("http://127.0.0.1:8000/course/outline/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        course_id,
+        version_id,
+        updates: { [editField]: newValue }
+      })
+    });
+
+    if (!response.ok) throw new Error("Failed to update outline");
+    const data = await response.json();
+    console.log("API response:", data);
+    sessionStorage.setItem("module_version_id", data.version_id);
+    // Update local state
+    const updated = { ...courseData };
+    updated.outline[editField] = newValue;
+    setCourseData(updated);
     setIsEditing(false);
     setEditField(null);
-    localStorage.setItem("generatedCourse", JSON.stringify(courseData));
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Error saving update.");
+  }
+};
+
 
  const handleFinalSave = async () => {
   if (!courseData) return;
@@ -74,15 +110,8 @@ const CourseOutline = () => {
       const data = await response.json();
       console.log("Modules API response:", data);
 
-      updatedCourse = {
-        ...courseData,
-        modules: data.result.modules,
-        suggestions_modules: data.suggestions
-      };
+      sessionStorage.setItem("module_version_id", data.version_id);
     }
-
-    // ✅ Save updated course to localStorage
-    localStorage.setItem("generatedCourse", JSON.stringify(updatedCourse));
 
     navigate("/modules");
   } catch (error) {

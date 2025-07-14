@@ -6,26 +6,77 @@ import './css/ModulesListPage.css';
 const ModulesListPage = () => {
   const [modules, setModules] = useState([]);
   const [loadingModuleIndex, setLoadingModuleIndex] = useState(null);
+  const [submodulesReady, setSubmodulesReady] = useState(false);
   const navigate = useNavigate();
+const checkAllSubmodulesGenerated = async (modules) => {
+  const checks = await Promise.all(
+    modules.map(async (mod) => {
+      const versionId = sessionStorage.getItem(`submodule_version_${mod.module_id}`);
+      if (!versionId) return false;
 
-  useEffect(() => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.modules) {
-        setModules(parsed.modules);
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/course/get_submodules?module_id=${mod.module_id}&version_id=${versionId}`);
+        if (!res.ok) return false;
+        const data = await res.json();
+        return data.submodules && data.submodules.length > 0;
+      } catch {
+        return false;
       }
+    })
+  );
+
+  return checks.every(status => status === true);
+};
+useEffect(() => {
+  const course_id = sessionStorage.getItem("course_id");
+  const module_version_id = sessionStorage.getItem("module_version_id");
+
+  if (!course_id || !module_version_id) return;
+
+  const fetchModulesAndCheck = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/course/get_modules?course_id=${course_id}&version_id=${module_version_id}`);
+      const data = await res.json();
+
+      setModules(data.modules);
+
+      const allReady = await checkAllSubmodulesGenerated(data.modules);
+      setSubmodulesReady(allReady);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load modules or submodule status.");
     }
+  };
+
+  fetchModulesAndCheck();
+}, []);
+
+   useEffect(() => {
+    const course_id = sessionStorage.getItem("course_id");
+    const module_version_id = sessionStorage.getItem("module_version_id");
+  
+    if (!course_id || !module_version_id) return;
+  
+    fetch(`http://127.0.0.1:8000/course/get_modules?course_id=${course_id}&version_id=${module_version_id}`)
+      .then(res => res.json())
+      .then(data => {
+        setModules(data.modules);
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Failed to load modules.");
+      });
   }, []);
 
   const handleModuleClick = async (index) => {
     const module = modules[index];
 
-    // Do nothing if submodules already exist or it's loading
-    if ((module.submodules && module.submodules.length > 0) || loadingModuleIndex === index) {
-      navigate(`/submodules/${index}`);
-      return;
-    }
+    const existingVersion = sessionStorage.getItem(`submodule_version_${module.module_id}`);
+
+      if (existingVersion) {
+        navigate(`/submodules/${module.module_id}`);
+        return;
+      }
 
     try {
       setLoadingModuleIndex(index); // Mark as loading
@@ -46,22 +97,8 @@ const ModulesListPage = () => {
       }
 
       const data = await response.json();
-      const generatedSubmodules = data.result.submodules || [];
-
-      const updatedModules = [...modules];
-      updatedModules[index] = {
-        ...updatedModules[index],
-        submodules: generatedSubmodules,
-        suggestions_submodules: data.suggestions
-      };
-
-      setModules(updatedModules);
-
-      const courseData = JSON.parse(localStorage.getItem("generatedCourse")) || {};
-      courseData.modules = updatedModules;
-      localStorage.setItem("generatedCourse", JSON.stringify(courseData));
-
-      navigate(`/submodules/${index}`);
+      sessionStorage.setItem(`submodule_version_${module.module_id}`, data.version_id);
+      navigate(`/submodules/${module.module_id}`);
     } catch (error) {
       console.error("Error generating submodules:", error);
       alert("Failed to generate submodules. Please try again.");
@@ -69,6 +106,28 @@ const ModulesListPage = () => {
       setLoadingModuleIndex(null); // Reset loading
     }
   };
+  const checkSubmodulesStatus = async (modules) => {
+  const checks = await Promise.all(
+    modules.map(async (mod) => {
+      const versionId = sessionStorage.getItem(`submodule_version_${mod.module_id}`);
+      if (!versionId) return { ...mod, submodulesReady: false };
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/course/get_submodules?module_id=${mod.module_id}&version_id=${versionId}`);
+        if (!res.ok) return { ...mod, submodulesReady: false };
+
+        const data = await res.json();
+        const hasSubmodules = data?.submodules?.length > 0;
+
+        return { ...mod, submodulesReady: hasSubmodules };
+      } catch {
+        return { ...mod, submodulesReady: false };
+      }
+    })
+  );
+
+  return checks;
+};
 
   return (
     <div className="modules-container">
@@ -78,7 +137,7 @@ const ModulesListPage = () => {
 
       <div className="modules-list">
         {modules.map((module, index) => {
-          const hasSubmodules = module.submodules && module.submodules.length > 0;
+          const hasSubmodules = sessionStorage.getItem(`submodule_version_${module.module_id}`);
           const isLoading = loadingModuleIndex === index;
 
           return (
@@ -94,9 +153,6 @@ const ModulesListPage = () => {
                   <div className="module-description">{module.module_description}</div>
                   <div className="module-hours">
                     Duration: <span>{module.module_hours}</span>
-                    {hasSubmodules && (
-                      <span className="submodules-count">• {module.submodules.length} submodules</span>
-                    )}
                   </div>
                 </div>
                 <div className="module-arrow-container">
@@ -117,18 +173,18 @@ const ModulesListPage = () => {
 
       <div className="modules-footer">
         <button
-          className="generate-course-btn"
-          onClick={() => navigate('/activities')}
-          disabled={!modules.every(mod => mod.submodules && mod.submodules.length > 0)}
-          style={{
-            opacity: modules.every(mod => mod.submodules && mod.submodules.length > 0) ? 1 : 0.5,
-            cursor: modules.every(mod => mod.submodules && mod.submodules.length > 0)
-              ? 'pointer'
-              : 'not-allowed',
-          }}
-        >
-          Save & Continue
-        </button>
+  className="generate-course-btn"
+  onClick={() => navigate('/activities')}
+  disabled={!submodulesReady}
+  style={{
+    opacity: submodulesReady ? 1 : 0.5,
+    cursor: submodulesReady ? 'pointer' : 'not-allowed',
+  }}
+>
+  Save & Continue
+</button>
+
+
       </div>
     </div>
   );

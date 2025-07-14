@@ -11,79 +11,137 @@ const SubmodulesPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSubmodule, setNewSubmodule] = useState({ name: '', description: '' });
 
-  useEffect(() => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.modules && parsed.modules[id]) {
-        setModule(parsed.modules[id]);
+ useEffect(() => {
+  const course_id = sessionStorage.getItem("course_id");
+  const module_version_id = sessionStorage.getItem("module_version_id");
+  const submodule_version_id = sessionStorage.getItem(`submodule_version_${id}`);
+
+  if (!course_id || !module_version_id || !submodule_version_id) return;
+
+  const fetchModuleAndSubmodules = async () => {
+    try {
+      const [moduleRes, submodulesRes] = await Promise.all([
+        fetch(`http://127.0.0.1:8000/course/get_modules?course_id=${course_id}&version_id=${module_version_id}&module_id=${id}`),
+        fetch(`http://127.0.0.1:8000/course/get_submodules?module_id=${id}&version_id=${submodule_version_id}`)
+      ]);
+
+      if (!moduleRes.ok || !submodulesRes.ok) {
+        throw new Error("Failed to fetch module or submodules");
       }
+
+      const moduleData = await moduleRes.json();
+      const submodulesData = await submodulesRes.json();
+      // 🚨 Check if submodules are empty
+      if (!submodulesData.submodules || submodulesData.submodules.length === 0) {
+        sessionStorage.removeItem(`submodule_version_${id}`);
+        navigate('/submodules');
+        return;
+      }
+      setModule({
+        ...(moduleData.module || {}),
+        submodules: submodulesData.submodules || [],
+        suggestions: submodulesData.suggestions || []
+      });
+    } catch (err) {
+      console.error("Failed to load module or submodules:", err);
+      alert("Error loading data. Please try again.");
     }
-  }, [id]);
+  };
+
+  fetchModuleAndSubmodules();
+}, [id]);
+
 
   const handleEdit = (index) => {
     const sub = module.submodules[index];
     setEditingIndex(index);
     setEditForm({
       name: sub.submodule_title,
-      description: sub.submoduleDescription
+      description: sub.submodule_description
     });
   };
 
-  const handleSave = () => {
-    const updatedModule = { ...module };
-    updatedModule.submodules[editingIndex] = {
-      submodule_title: editForm.name,
-      submoduleDescription: editForm.description
-    };
+  const handleSave = async () => {
+  const version_id = sessionStorage.getItem(`submodule_version_${id}`);
+  const submodule_id = module.submodules[editingIndex]?.submodule_id;
 
-    updateModule(updatedModule);
+  try {
+    await fetch("http://127.0.0.1:8000/course/submodules/update", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        module_id: id,
+        version_id,
+        submodule_id,
+        updated_fields: {
+          submodule_title: editForm.name,
+          submodule_description: editForm.description
+        }
+      })
+    });
     setEditingIndex(null);
-  };
+    window.location.reload();
+  } catch (err) {
+    console.error("Update failed", err);
+    alert("Failed to update submodule.");
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleDelete = (index) => {
-    if (window.confirm("Are you sure you want to delete this submodule?")) {
-      const updatedModule = { ...module };
-      updatedModule.submodules.splice(index, 1);
-      updateModule(updatedModule);
-    }
+  const handleDelete = async (index) => {
+  if (!window.confirm("Are you sure you want to delete this submodule?")) return;
+
+  const submodule_id = module.submodules[index]?.submodule_id;
+  const version_id = sessionStorage.getItem(`submodule_version_${id}`);
+
+  try {
+    await fetch(`http://127.0.0.1:8000/course/submodules/delete?module_id=${id}&version_id=${version_id}&submodule_id=${submodule_id}`, {
+      method: "DELETE"
+    });
     window.location.reload();
-  };
+  } catch (err) {
+    console.error("Delete failed", err);
+    alert("Failed to delete submodule.");
+  }
+};
 
-  const handleAddModalSubmit = () => {
-    if (!newSubmodule.name || !newSubmodule.description) {
-      alert("Please fill in all fields");
-      return;
-    }
 
-    const updatedModule = { ...module };
-    if (!updatedModule.submodules) updatedModule.submodules = [];
-    
-    updatedModule.submodules.push({
-      submodule_title: newSubmodule.name,
-      submoduleDescription: newSubmodule.description
+  const handleAddModalSubmit = async () => {
+  if (!newSubmodule.name || !newSubmodule.description) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  const version_id = sessionStorage.getItem(`submodule_version_${id}`);
+
+  try {
+    await fetch("http://127.0.0.1:8000/course/submodules/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        module_id: id,
+        version_id,
+        submodule: {
+          submodule_id: crypto.randomUUID(),
+          submodule_title: newSubmodule.name,
+          submodule_description: newSubmodule.description
+        }
+      })
     });
 
-    updateModule(updatedModule);
     setNewSubmodule({ name: '', description: '' });
     setShowAddModal(false);
     window.location.reload();
-  };
-
-  const updateModule = (updatedModule) => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      parsed.modules[id] = updatedModule;
-      localStorage.setItem("generatedCourse", JSON.stringify(parsed));
-      setModule(updatedModule);
-    }
-  };
+  } catch (err) {
+    console.error("Add failed", err);
+    alert("Failed to add submodule.");
+  }
+};
 
   if (!module) return <div className="modules-container">Loading...</div>;
 
