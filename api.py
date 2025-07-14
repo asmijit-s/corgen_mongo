@@ -94,6 +94,33 @@ class VersionHistoryResponse(BaseModel):
     stage: Stage
     tag: Optional[str]
 
+class OutlineUpdate(BaseModel):
+    course_id: str
+    version_id: str
+    updates: dict  # key-value pairs of fields to update
+
+class UpdateModulePayload(BaseModel):
+    course_id: str
+    version_id: str
+    module_id: str
+    updated_fields: Dict[str, Any]
+
+class UpdateSubmodulePayload(BaseModel):
+    module_id: str
+    version_id: str
+    submodule_id: str
+    updated_fields: Dict[str, Any]
+
+class AddModule(BaseModel):
+    course_id: str
+    version_id: str
+    module: Module
+
+class AddSubmodulePayload(BaseModel):
+    module_id: str
+    version_id: str
+    submodule : Submodule
+    
 def as_json(obj: BaseModel | dict) -> str:
     return json.dumps(obj.model_dump() if isinstance(obj, BaseModel) else obj, indent=2)
 
@@ -160,7 +187,6 @@ def generate_outline(course: CourseInit):
     })
 
     input_record = {
-        "version_id": version_id,
         "course_id": course_id,
         "user_input": course_dict,
         "stage": "init",
@@ -186,11 +212,18 @@ def generate_outline(course: CourseInit):
         logger.exception("Failed to parse LLM response into CourseOutline")
         return {"error": "LLM response could not be parsed."}
 
+    course_state[course_id] = {
+        "course_init": course_dict,
+        "outline": result
+    }
+    suggestions = get_stage_suggestions(Stage.outline, as_json(result))
+
     # Step 4: Store the outline
     outline_record = {
         "version_id": version_id,
         "course_id": course_id,
         "outline": safe_bson(result),
+        "suggestions_outlines": suggestions,
         "timestamp": datetime.now(timezone.utc)
     }
 
@@ -200,11 +233,7 @@ def generate_outline(course: CourseInit):
     except Exception as e:
         logger.exception("Failed to store course outline in MongoDB")
 
-    course_state[course_id] = {
-        "course_init": course_dict,
-        "outline": result
-    }
-    suggestions = get_stage_suggestions(Stage.outline, as_json(result))
+    
 
     # Final Response
     return {
@@ -214,6 +243,26 @@ def generate_outline(course: CourseInit):
         "course_id": course_id
     }
 
+@router.get("/get_outline")
+def get_course_outline(course_id: Optional[str] = None, version_id: Optional[str] = None):
+    print(f'course_id: {type(course_id)}-{course_id}')
+    print(f'version_id: {type(version_id)}-{version_id}')
+    result = collection_outline.find_one({"course_id": course_id, "version_id": version_id})
+    if not result:
+        raise HTTPException(status_code=404, detail="Course outline not found")
+    
+    result["_id"] = str(result["_id"])  # Convert ObjectId for frontend safety
+    return result
+
+@router.put("/outline/update")
+def update_course_outline(update: OutlineUpdate):
+    result = collection_outline.update_one(
+        {"course_id": update.course_id, "version_id": update.version_id},
+        {"$set": {f"outline.{k}": v for k, v in update.updates.items()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Outline not updated")
+    return {"message": "Outline updated successfully"}
 
 @router.post("/generate/modules")
 def generate_module(course_outline: CourseOutline):
@@ -231,13 +280,14 @@ def generate_module(course_outline: CourseOutline):
         module.module_id = str(uuid.uuid4())
     module_ids = [m.module_id for m in result.modules]
     auto_tag_version(course_outline.course_id, version_id, Stage.module, "initial-module")
-    
+    suggestions = get_stage_suggestions(Stage.module, as_json(result))
     module_record = {
         "course_id": course_outline.course_id,
         "version_id": version_id,
         "module_ids": module_ids,
         "stage": "module",
         "generated_modules": safe_bson(result),
+        "suggestions_modules": suggestions,
         "timestamp": datetime.now(timezone.utc)
     }
 
@@ -251,14 +301,81 @@ def generate_module(course_outline: CourseOutline):
     course_entry = course_state.setdefault(course_outline.course_id, {})
     course_entry["modules"] = result
 
-    # Step 6: Get suggestions and return
-    suggestions = get_stage_suggestions(Stage.module, as_json(result))
     return {
-        "result": result,
-        "suggestions": suggestions,
         "version_id": version_id,
         "course_id": course_outline.course_id
     }
+
+@router.get("/get_modules")
+def get_modules(course_id: Optional[str] = None, version_id: Optional[str] = None, module_id: Optional[str] = None):
+    doc = collection_modules.find_one({"course_id": course_id, "version_id": version_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Modules not found")
+
+    doc["_id"] = str(doc["_id"])
+    modules = doc["generated_modules"]["modules"]
+
+    if module_id:
+        for module in modules:
+            if module.get("module_id") == module_id:
+                return {
+                    "module": module,
+                    "suggestions": doc.get("suggestions_modules", []),
+                    "version_id": version_id,
+                    "course_id": course_id
+                }
+        raise HTTPException(status_code=404, detail="Module not found for provided module_id")
+
+    # If no module_id is provided, return all modules
+    return {
+        "modules": modules,
+        "suggestions": doc.get("suggestions_modules", []),
+        "version_id": version_id,
+        "course_id": course_id
+    }
+
+
+@router.post("/module/add")
+def add_module(payload: AddModule):
+    result = collection_modules.update_one(
+        {"course_id": payload.course_id, "version_id": payload.version_id},
+        {"$push": {"generated_modules.modules": payload.module.dict()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Module not added")
+
+    return {
+        "message": "Module added successfully",
+        "module": payload.module
+    }
+
+@router.put("/module/update")
+def update_module(payload: UpdateModulePayload):
+    result = collection_modules.update_one(
+        {
+            "course_id": payload.course_id,
+            "version_id": payload.version_id,
+            "generated_modules.modules.module_id": payload.module_id
+        },
+        {
+            "$set": {
+                f"generated_modules.modules.$.{k}": v for k, v in payload.updated_fields.items()
+            }
+        }
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Module not updated")
+    return {"message": "Module updated", "module_id": payload.module_id}
+
+@router.delete("/module/delete")
+def delete_module(course_id: str, version_id: str, module_id: str):
+    result = collection_modules.update_one(
+        {"course_id": course_id, "version_id": version_id},
+        {"$pull": {"generated_modules.modules": {"module_id": module_id}}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Module not deleted")
+    return {"message": "Module deleted", "module_id": module_id}
 
 @router.post("/generate/submodules")
 def generate_submodule(module: Module):
@@ -278,11 +395,14 @@ def generate_submodule(module: Module):
         submodule.submodule_id = str(uuid.uuid4())
         submodule_ids.append(submodule.submodule_id)
     auto_tag_version(module.module_id, version_id, Stage.submodule, "initial-submodule")
+    suggestions = get_stage_suggestions(Stage.submodule, as_json(result))
+
     submodule_record = {
         "module_id": module.module_id,
         "version_id": version_id,
         "generated_submodules": safe_bson(result),
         "submodule_ids": submodule_ids,
+        "suggestions_submodules" : suggestions,
         "stage": "submodule",
         "timestamp": datetime.now(timezone.utc)
     }
@@ -295,13 +415,63 @@ def generate_submodule(module: Module):
 
     course_state[module.module_id] = course_state.get(module.module_id, {})
     course_state[module.module_id]["submodules"] = result
-    suggestions = get_stage_suggestions(Stage.submodule, as_json(result))
     return {
-        "result": result,
-        "suggestions": suggestions,
         "version_id": version_id,
         "module_id": module.module_id
     }
+
+@router.get("/get_submodules")
+def get_submodules(module_id: str, version_id: str, submodule_id: Optional[str] = None):
+    record = collection_submodules.find_one({
+        "module_id": module_id,
+        "version_id": version_id
+    })
+
+    if not record:
+        raise HTTPException(status_code=404, detail="Submodules not found")
+
+    return {
+        "submodules": record.get("generated_submodules", {}).get("submodules", []),
+        "suggestions": record.get("suggestions_submodules", [])
+    }
+
+@router.put("/submodules/update")
+def update_submodule(payload: UpdateSubmodulePayload):
+    result = collection_submodules.update_one(
+        {
+            "module_id": payload.module_id,
+            "version_id": payload.version_id,
+            "generated_submodules.submodules.submodule_id": payload.submodule_id
+        },
+        {
+            "$set": {
+                f"generated_submodules.submodules.$.{k}": v for k, v in payload.updated_fields.items()
+            }
+        }
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Submodule not updated")
+    return {"message": "Submodule updated", "submodule_id": payload.submodule_id}
+
+@router.delete("/submodules/delete")
+def delete_submodule(module_id: str, version_id: str, submodule_id: str):
+    result = collection_submodules.update_one(
+        {"module_id": module_id, "version_id": version_id},
+        {"$pull": {"generated_submodules.submodules": {"submodule_id": submodule_id}}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Submodule not deleted")
+    return {"message": "Submodule deleted successfully"}
+
+@router.post("/submodules/add")
+def add_submodule(payload: AddSubmodulePayload):
+    result = collection_submodules.update_one(
+        {"module_id": payload.module_id, "version_id": payload.version_id},
+        {"$push": {"generated_submodules.submodules": payload.submodule.dict()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Submodule not added")
+    return {"message": "Submodule added successfully", "submodule": payload.submodule}
 
 @router.post("/generate/activities")
 def generate_activity(payload: ActivityRequest):

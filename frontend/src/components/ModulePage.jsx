@@ -13,12 +13,22 @@ const ModulesPage = () => {
   const [newModule, setNewModule] = useState({ title: '', description: '', hours: '' });
 
   useEffect(() => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.modules) setModules(parsed.modules);
-    }
-  }, []);
+  const course_id = sessionStorage.getItem("course_id");
+  const module_version_id = sessionStorage.getItem("module_version_id");
+
+  if (!course_id || !module_version_id) return;
+
+  fetch(`http://127.0.0.1:8000/course/get_modules?course_id=${course_id}&version_id=${module_version_id}`)
+    .then(res => res.json())
+    .then(data => {
+      setModules(data.modules);
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Failed to load modules.");
+    });
+}, []);
+
 
   const handleEdit = (index) => {
     const mod = modules[index];
@@ -31,22 +41,37 @@ const ModulesPage = () => {
     });
   };
 
-  const handleSave = () => {
+const handleSave = async () => {
+  const course_id = sessionStorage.getItem("course_id");
+  const version_id = sessionStorage.getItem("module_version_id");
+  const module_id = modules[editingModule].module_id;
+  console.log(`module_id: ${module_id}`)
+  const updatedFields = {
+    module_id: module_id,
+    module_title: editForm.title,
+    module_description: editForm.description,
+    module_hours: (editForm.hours)
+  };
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/course/module/update", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ course_id, version_id, module_id, updated_fields: updatedFields })
+    });
+
+    if (!res.ok) throw new Error("Failed to update module");
+
     const updatedModules = [...modules];
-    updatedModules[editingModule] = {
-      module_title: editForm.title,
-      module_description: editForm.description,
-      module_hours: (editForm.hours) || 0
-    };
+    updatedModules[editingModule] = { ...updatedModules[editingModule], ...updatedFields };
     setModules(updatedModules);
     setEditingModule(null);
-    const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-        const parsed = JSON.parse(stored);
-        parsed.modules = updatedModules;
-        localStorage.setItem("generatedCourse", JSON.stringify(parsed));
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Update failed.");
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,22 +81,31 @@ const ModulesPage = () => {
     }));
   };
 
-  const handleDelete = (index) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this module?");
-    if (!confirmDelete) return;
+  const handleDelete = async (index) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this module?");
+  if (!confirmDelete) return;
+
+  const course_id = sessionStorage.getItem("course_id");
+  const version_id = sessionStorage.getItem("module_version_id");
+  const module_id = modules[index].module_id;
+
+  try {
+    const res = await fetch(
+      `http://127.0.0.1:8000/course/module/delete?course_id=${course_id}&version_id=${version_id}&module_id=${module_id}`,
+      { method: "DELETE" }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete");
 
     const updated = [...modules];
     updated.splice(index, 1);
     setModules(updated);
-     const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-        const parsed = JSON.parse(stored);
-        parsed.modules = updated;
-        localStorage.setItem("generatedCourse", JSON.stringify(parsed));
-    }
-    window.location.reload();
+  } catch (err) {
+    console.error(err);
+    alert("Delete failed.");
+  }
+};
 
-  };
 
 
   const handleAddModule = () => {
@@ -86,37 +120,42 @@ const ModulesPage = () => {
     }));
   };
 
-  const handleAddModalSubmit = () => {
-    if (!newModule.title || !newModule.description) {
-      alert("Please fill in all fields.");
-      return;
-    }
-    const moduleToAdd = {
-      module_id: uuidv4(),
-      module_title: newModule.title,
-      module_description: newModule.description,
-      module_hours: parseInt(newModule.hours) || 0
-    };
-    const updatedModules = [...modules, moduleToAdd];
-    setModules(updatedModules);
-    setNewModule({ title: '', description: '', hours: '' });
-    setShowAddModal(false);
-     const stored = localStorage.getItem("generatedCourse");
-    if (stored) {
-        const parsed = JSON.parse(stored);
-        parsed.modules = updatedModules;
-        localStorage.setItem("generatedCourse", JSON.stringify(parsed));
-    }
-    window.location.reload();
+  const handleAddModalSubmit = async () => {
+  if (!newModule.title || !newModule.description) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const moduleToAdd = {
+    module_id: uuidv4(),
+    module_title: newModule.title,
+    module_description: newModule.description,
+    module_hours: `${newModule.hours} hours` || "1 hour"
   };
 
+  const course_id = sessionStorage.getItem("course_id");
+  const version_id = sessionStorage.getItem("module_version_id");
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/course/module/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ course_id, version_id, module: moduleToAdd })
+    });
+
+    if (!res.ok) throw new Error("Failed to add module");
+
+    setModules(prev => [...prev, moduleToAdd]);
+    setShowAddModal(false);
+    setNewModule({ title: '', description: '', hours: '' });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add module.");
+  }
+};
+
+
   const handleFinalSave = () => {
-    const stored = localStorage.getItem("generatedCourse");
-    if (!stored) return;
-    const parsed = JSON.parse(stored);
-    parsed.modules = modules;
-    localStorage.setItem("generatedCourse", JSON.stringify(parsed));
-    alert("Modules saved to course.");
     navigate('/submodules');
 
   };
