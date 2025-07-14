@@ -41,6 +41,11 @@ import json
 import logging
 from typing import Optional, Dict, Any
 from fastapi.responses import JSONResponse
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 router = APIRouter()
 
@@ -49,7 +54,7 @@ logger = logging.getLogger("course_api")
 logging.basicConfig(level=logging.INFO)
 
 
-MONGO_URI = "mongodb+srv://asmijits:w8XmSk1mRjP5RI46@cluster0.hv0xmmi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI= os.getenv("MONGO_URI")
 DB_NAME = "corgen"
 
 client = MongoClient(MONGO_URI)
