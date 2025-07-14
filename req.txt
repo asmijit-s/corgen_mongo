@@ -2,4 +2,4 @@ fastapi
 google-genai
 python-dotenv
 pydantic
-requests
+requests           

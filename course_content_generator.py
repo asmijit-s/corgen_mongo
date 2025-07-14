@@ -137,7 +137,7 @@ class ReadingInput(BaseModel):
     notes_path: Optional[str] = None
     pdf_path: Optional[str] = None
     url: Optional[str] = None
-
+                      
 class LectureInput(BaseModel):
     course_outline: Union[dict, List[dict]]
     module_name: str

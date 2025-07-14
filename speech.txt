@@ -1,7 +1,7 @@
 Decision Tree
 Last Updated : 16 Jan, 2025
 Decision tree is a simple diagram that shows different choices and their possible results helping you make decisions easily. This article is all about what decision trees are, how they work, their advantages and disadvantages and their applications.
-
+               
 Understanding Decision Tree
 A decision tree is a graphical representation of different options for solving a problem and show how different factors are related. It has a hierarchical tree structure starts with one main question at the top called a node which further branches out into different possible outcomes where:
 

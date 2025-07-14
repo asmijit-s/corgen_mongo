@@ -12,7 +12,7 @@ from course_content_generator import QuizOut, ReadingMaterialOut, LectureScriptO
 load_dotenv()
 
 llmclient = genai.Client(api_key=os.getenv("GEMINI_API_KEY")) 
-
+                  
 ################## GENERIC LLM FUNCTIONS #######################################################
 def call_llm(prompt: Content, system_prompt: str, response_schema: Type[BaseModel], debug: bool = False) -> Optional[dict]:
     try:

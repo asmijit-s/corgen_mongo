@@ -21,3 +21,4 @@ app.add_middleware(
 def read_root():
     return {"message": "AI Course Generator backend is running"}
 
+                           
